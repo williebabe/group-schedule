@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Group Availability Checker</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Group Availability Checker</h1>
+      <p>Enter your status to see when everyone is available in real-time</p>
+    </header>
+
+    <!-- ฟอร์มกรอกข้อมูล -->
+    <section class="card form-section">
+      <h2>Name / Status</h2>
+      <form id="status-form">
+        <div class="form-group">
+          <label for="date-select">Select Dates to Record (Multiple Selection Allowed):</label>
+          <input type="text" id="date-select" placeholder="Click to select dates..." required>
+        </div>
+
+        <div class="form-group">
+          <label for="name">Name:</label>
+          <input type="text" id="name" placeholder="Enter your nickname..." required>
+        </div>
+
+        <div class="form-group">
+          <label for="status">Current Status:</label>
+          <select id="status" onchange="toggleReasonInput()">
+            <option value="available">🟢 ว่าง (พร้อมลุย)</option>
+            <option value="busy-online">🟡 ไม่ว่างไป แต่ช่วยงานออนไลน์ได้</option>
+            <option value="busy">🔴 ไม่ว่างเลย (ติดภารกิจ)</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="reason-group" style="display: none;">
+          <label for="reason">Note:</label>
+          <input type="text" id="reason" placeholder="เช่น ติดเรียน, ติดธุระบ้าน, ช่วยสไลด์ให้ได้...">
+        </div>
+
+        <button type="submit" id="btn-submit">Submit!</button>
+      </form>
+    </section>
+
+    <!-- สรุปผลลัพธ์ (Summary Dashboard) กลับมาแล้ว! -->
+    <section class="card summary-section">
+      <h2>สรุปความพร้อมของสมาชิก (ยอดรวมทั้งหมด)</h2>
+      <div class="stats-grid">
+        <div class="stat-box green">
+          <span class="stat-number" id="count-available">0</span>
+          <span class="stat-label">รายการที่ว่าง</span>
+        </div>
+        <div class="stat-box yellow">
+          <span class="stat-number" id="count-online">0</span>
+          <span class="stat-label">รายการช่วยออนไลน์</span>
+        </div>
+        <div class="stat-box red">
+          <span class="stat-number" id="count-busy">0</span>
+          <span class="stat-label">รายการไม่ว่าง</span>
+        </div>
+      </div>
+      <div id="common-status" class="status-banner">Please wait...</div>
+    </section>
+
+    <!-- สรุปการลงชื่อทั้งหมด -->
+    <section class="card table-section">
+      <h2>สรุปสถานะสมาชิกรายวัน</h2>
+      <table id="members-table">
+        <thead>
+          <tr>
+            <th style="width: 25%;">Name</th>
+            <th style="width: 60%;">Date and Status</th>
+            <th style="width: 15%; text-align: center;">Manage</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
